@@ -1,0 +1,486 @@
+<!DOCTYPE HTML>
+<HTML>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=11" />
+    <!--jquery and other util )-->
+    <script type="text/javascript" src="lib/jquery/jquery-1.12.4.min.js"></script>
+    <script type="text/javascript" src="lib/jquery/jquery.declare-1.0.js"></script>
+    <script type="text/javascript" src="lib/jquery/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+    <script type="text/javascript" src="lib/timezonejs/date.js"></script>
+    <link href="css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <script src="lib/reconnecting-websocket.min.js" type="text/javascript"></script>
+    <script src="js/globalConfig.js?v1.6.9" type="text/javascript"></script>
+    <script src="js/websocketClient.js?v1.6.9" type="text/javascript"></script>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+</head>
+
+<body>
+<style>
+	body{
+		background-image: linear-gradient(to right, #434343 0%, black 100%);
+		color:white;
+	}
+	.container_panel{
+		padding:20px;
+	}
+	.container_panel .container_row{
+		display:flex;
+		width:100%;
+		border-bottom:1px solid #404040;
+		flex-direction:row;
+	}
+	.container_cell{
+		margin-right:30px;
+	}
+	
+	.container_cell span{
+		margin-left:4px;
+		min-width:60px;
+	}
+
+	.container_cell img{
+		max-width:250px;
+	}
+	
+	.hide{
+		visibility: hidden;
+	}
+
+	h2, h3{
+		padding:0px;
+		margin:0px;
+	}
+
+	.container > p{
+		margin:0px;
+		padding:0px;	
+	}
+
+	.container{
+		max-width: 990px;
+	}
+
+	.general-info{
+		background-color:#99c5ec; 
+		color:black; 
+		border-radius: 8px; 
+		margin:4px;
+		padding:10px;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+
+	.general-time{
+		color:black; 
+		display:flex; 
+		align-items: center; 
+		justify-content: space-around;
+		background-color: #67B973; 
+		border-radius: 8px;
+		margin-top:5px;
+		padding:8px;
+	}
+
+	.capture-number{
+		background-color:#66A2DC; 
+		color:black; 
+		border-radius: 8px; 
+		margin:4px;
+		padding:14px;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+
+	.detail{
+		background-color:#e4e8eb; 
+		color:black; 
+		border-radius: 5px; 
+		margin:4px;
+		padding:5px;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+
+	.lbl_masterid, 
+	.lbl_event_type, 
+	.lbl_gate, 
+	.lbl_yard,
+	.lbl_status,
+	.lbl_tracker_id,
+	.lbl_chassisnumber,
+	.lbl_containernumber,
+	.lbl_orgin_containernumber,
+	.lbl_usdot,
+	.lbl_ca_number
+	{
+		background-color: #efefef;
+		/*width:75%;*/
+		margin-top:5px;
+		padding:5px 10px 5px 10px;
+		border-radius: 5px;
+	}
+
+	table {
+		border-collapse: collapse;
+		width: 100%;
+	}
+
+	tr th{
+		font-size:25px;
+	}
+
+	tr td{
+		font-size:18px;
+	}
+
+	th, td {
+		padding: 8px;
+		text-align: left;
+		color:white;
+		border-bottom: 1px solid #595959;
+		background-color: black;
+	}
+
+	h1{
+		font-size:40px;
+	}
+	h2{
+		font-size:26px;
+	}
+	h3{
+		font-size:24px;
+	}
+	h4{
+		font-size:20px;
+	}
+	h5{
+		font-size:18px;
+	}
+
+
+</style>
+
+<div class="container_panel">
+
+	<!--General Info-->
+	<div class="container text-center">
+		<h1><strong>General Info</strong></h1>
+		<div class="row flex justify-content-center">
+		  <div class="col-4 general-info">
+			<h2>MasterID</h2>
+			<h3 class="lbl_masterid"></h3>
+		  </div>
+		  <div class="col-3 general-info">
+			<h2>Event Type</h2>
+			<h3 class="lbl_event_type"></h3>
+		  </div>
+		  <div class="col-4">
+			<div class="general-time" style="background-color: #67B973">
+				<h4>Start time</h4>
+				<h5 class="lbl_start_time"></h5>
+			</div>
+			<div class="general-time" style="background-color: #FDBA8C">
+				<h4>End time</h4>
+				<h5 class="lbl_end_time"></h5>
+			</div>
+		  </div>
+		</div>
+		<div class="row flex justify-content-center" style="margin-top:5px;">
+			<div class="col-3 general-info">
+			  <h2>Gate</h2>
+			  <h3 class="lbl_gate"></h3>
+			</div>
+			<div class="col-3 general-info">
+			  <h2>Yard</h2>
+			  <h3 class="lbl_yard"></h3>
+			</div>
+			<div class="col-3 general-info">
+				<h2>Status</h2>
+				<h3 class="lbl_status"></h3>
+			</div>
+			<div class="col-2 general-info">
+				<h2>Tracker ID</h2>
+				<h3 class="lbl_tracker_id"></h3>
+			</div>
+		</div>
+	</div>
+
+	<!--Capture Number-->
+	<div class="container text-center" style="margin-top:15px;">
+		<h1><strong>Captured Number</strong></h1>
+		<div class="row flex justify-content-center">
+			<div class="col-3 capture-number">
+				<h2>US_DOT Num</h2>
+				<h3 class="lbl_usdot"></h3>
+			</div>
+			<div class="col-4 capture-number">
+				<h2>Original Container Num</h2>
+				<h3 class="lbl_orgin_containernumber"></h3>
+			</div>
+			<div class="col-3 capture-number">
+			  <h2>Container Num</h2>
+			  <h3 class="lbl_containernumber"></h3>
+			</div>
+		</div>
+	</div>
+
+	<!--Capture Number-->
+	<div class="container text-center" style="margin-top:15px;">
+		<div class="row flex justify-content-center">
+			<div class="col-5 capture-number">
+				<h2>CA Number</h2>
+				<h3 class="lbl_ca_number"></h3>
+			</div>
+			<div class="col-5 capture-number">
+				<h2>Chassis Num</h2>
+				<h3 class="lbl_chassisnumber"></h3>
+			</div>
+		</div>
+	</div>
+
+	<div class="container text-center" style="margin-top:15px;">
+		<h1><strong>Detail Info</strong></h1>
+		<div class="row align-items-center justify-content-center table" style="margin-top:5px;">
+	
+		
+		</div>
+	</div>
+		<!--<div class="row align-items-center justify-content-center" style="margin-top:5px;">
+			<div class="container_row">
+				<div class="container_detail hide">
+					<table class="all_in_one_detail">
+						<tr>
+							<th>Attribute</th>
+							<th>Value</th>
+						</tr>
+					</table>
+				<div>
+			</div>
+		</div>-->
+		<!--<img src="./css/images/p1.jpg" width="100%"/>-->
+		<!--<div class="row align-items-center justify-content-center" style="margin-top:5px;">
+			<div class="container_row">
+				<div class="container_detail hide">
+					<div class="container_cell all_in_one_detail" >
+					</div>
+				</div>
+			</div>
+		</div>-->
+		
+	
+
+</div>
+
+<script>
+var ar=[];
+
+var print_data=function(){
+	var last_index=ar.length-1;
+	var entry=ar[last_index]; if(!entry) return;
+	var datos=entry["data"];if(!datos) return;
+	datos=JSON.parse(datos);
+	console.log(datos);
+
+	/**** General Info ****/
+	jQuery(".lbl_masterid").text(datos["master_id"]);
+	jQuery(".lbl_event_type").text(datos["event_type"]);
+	jQuery(".lbl_start_time").text(datos["start_time"]);
+	jQuery(".lbl_end_time").text(datos["end_time"]);
+	jQuery(".lbl_gate").text(datos["gate"]);
+	jQuery(".lbl_yard").text(datos["yard"]);
+	jQuery(".lbl_status").text(datos["status"]);
+	jQuery(".lbl_tracker_id").text(datos["tracker_id"]);
+	
+	/**** Capture Number ****/
+	var chassisNumberInfo = datos["information"]["ChassisNumber"];
+	if (chassisNumberInfo && chassisNumberInfo["text"]) {
+		jQuery(".lbl_chassisnumber").text(chassisNumberInfo["text"]);
+	} else {
+		jQuery(".lbl_chassisnumber").text("N/A");
+	}
+	//jQuery(".lbl_chassisnumber_score").text(datos["information"]["ChassisNumber"]["confidence"]);
+
+	var ca_numberInfo = datos["information"]["CANumber"];
+	if (ca_numberInfo && ca_numberInfo["text"]) {
+		jQuery(".lbl_ca_number").text(ca_numberInfo["text"]);
+	} else {
+		jQuery(".lbl_ca_number").text("N/A");
+	}
+	//jQuery(".lbl_ca_number").text(datos["information"]["CANumber"]["confidence"]); 
+
+	jQuery(".lbl_containernumber").text(datos["information"]["ContainerNumber"]["text"]);
+	jQuery(".lbl_containernumber_score").text(datos["information"]["ContainerNumber"]["confidence"]);
+	jQuery(".lbl_orgin_containernumber").text(datos["information"]["OriginContainerNumber"]["text"]);
+	jQuery(".lbl_orgin_containernumber_score").text(datos["information"]["OriginContainerNumber"]["confidence"]);
+	jQuery(".lbl_usdot").text(datos["information"]["USDOT"]["text"]);
+	jQuery(".lbl_usdot_score").text(datos["information"]["USDOT"]["confidence"]);
+
+	/**** Detail ****/
+	var props=datos["details"];
+	
+	for (var i = 0; i < props.length; i++) {
+		var $new = $("<div class='col-6 text-center align-self-start img'></div>");
+		
+		//Get image to top
+		for (var key in props[i]) {
+			if (key == "image_url") {
+				console.log("inside image_url")
+				if(i==0){
+					$label = $("<span class='badge rounded-pill text-bg-success' style='font-size:18px;'>Inbound</span>")
+				var $img = $("<img>").attr("src", props[i][key]).width("100%").addClass("img-fluid");
+				$new.append($label);
+				$new.append($img);
+				} else {
+					$label = $("<span class='badge rounded-pill text-bg-warning' style='font-size:18px;'>Outbound</span>")
+				var $img = $("<img>").attr("src", props[i][key]).width("100%").addClass("img-fluid");
+				$new.append($label);
+				$new.append($img);
+				}
+				
+			}
+				
+		}
+
+        $new.append("<table></table>");
+        $new.find("table").append("<tr><th><strong>Attribute</strong></th><th><strong>Value</strong></th></tr>");
+
+    for (var key in props[i]) {
+		//console.log(key);
+        if (key === "detection" && Array.isArray(props[i][key])) {
+            for (var j = 0; j<props[i][key].length; j++) {
+                var detection = props[i][key][j];
+				//console.log(detection);
+                for (var detection_key in detection) {
+                    $new.find("table").append("<tr><td>" + detection_key + "</td><td>" + detection[detection_key] + "</td></tr>");
+                }
+            }
+        }  else if (key !== "image_url"){
+			$new.find("table").append("<tr><td>" + key + "</td><td>" + props[i][key] + "</td></tr>");
+		}
+    }
+    	$(".table").append($new);
+	}
+
+  /*for (var i = 0; i < props.length; i++) {
+        var $new = $("<div class='col-6 text-center'></div>");
+        $new.append("<table></table>");
+        $new.find("table").append("<tr><th>Attribute</th><th>Value</th></tr>");
+        for (var key in props[i]) {
+            $new.find("table").append("<tr><td>" + key + "</td><td>" + props[i][key] + "</td></tr>");
+        }
+        $(".table").append($new);
+    }*/
+	/*
+	var temp=jQuery(".container_row .container_detail");
+	for (var i=0;i<props.length;i++){
+		var element=props[i];
+		var container=temp.clone();
+		container.removeClass("hide");
+		container.find(".lbl_camera_host").text(element[container.find(".lbl_camera_host").attr("node")]);
+		container.find(".lbl_camera_name").text(element[container.find(".lbl_camera_name").attr("node")]);
+		container.find(".lbl_image_url").attr("src",element[container.find(".lbl_image_url").attr("node")]);
+		container.find(".all_in_one_detail").html(json_resolver(element));
+		temp.parent().append(container);
+		//clone.find(".lbl_camera_host").text(element.)
+	}*/
+}
+
+/*var json_resolver=function(element,tab){
+	if(!tab)tab="";
+	var html=""
+	for(var key in element){
+		 if(element.hasOwnProperty(key)){
+			 var v=element[key]
+			 if(Array.isArray(v)){
+				for (var j=0;j<v.length;j++){
+					html+=json_resolver(v[j],"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;")+"<br/>";
+				}
+			 } else {
+				 if(key!="image_url"){
+				 	html+="<tr><td>"+key+"</td><td>"+element[key]+"</td></tr>"
+					//html+=tab+key+"="+element[key]+"<br\>";
+				 }
+			 }
+		 }
+	}
+	return html;
+}*/
+
+
+$(document).ready(function() {
+    var ops_ws= {
+        host: "192.168.162.213",
+        port: "8017",
+        channel: "/dashboard/lso/web"
+    }
+	
+	var cache=localStorage.getItem("truck-ocr");
+	if(!cache){
+		cache=[];
+	}else{
+		ar=JSON.parse(cache);
+	}
+	
+	var socket = new websocketClient({
+		arg:ops_ws
+	});
+	
+	
+	var ws = socket.ws;
+	
+	ws.addEventListener('message', function (evt) {
+		var body = JSON.parse(evt.data);
+		if(body.querytype=="truckocr"){
+			if(!checkExists(body)){
+				console.log("new entry injected");
+				ar.push(body);
+				localStorage.setItem("truck-ocr",JSON.stringify(ar));
+				print_data();
+			}
+		}
+	});
+	
+	var checkExists=function(source){
+		var current=getMasterID(source);
+		for(var i=0;i<ar.length;i++){
+			var el=ar[i];
+			if(current=getMasterID(ar[i])){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	var getMasterID=function(prop){
+		return JSON.parse(prop.data)["master_id"];
+	}
+
+	var connect = function () {
+		var body = { querytype: "truckocr", data: "subscribe" };
+		var msg = JSON.stringify(body);
+		ws.readySend(msg);
+	};
+	var disconnect = function () {
+		var body = { querytype: "truckocr", data: "unsubscribe" };
+		var msg = JSON.stringify(body);
+		console.log("send unsubscribe message:" + msg);
+		ws.readySend(msg);
+	};
+	connect();
+	
+	print_data();
+	
+});
+
+
+
+</script>
+
+</body>
+
+</html>
